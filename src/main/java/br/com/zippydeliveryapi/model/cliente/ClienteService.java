@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.zippydeliveryapi.model.acesso.Usuario;
 import br.com.zippydeliveryapi.model.acesso.UsuarioService;
+import br.com.zippydeliveryapi.model.mensagens.EmailService;
 import br.com.zippydeliveryapi.util.exception.EntidadeNaoEncontradaException;
 
 @Service
@@ -22,6 +23,10 @@ public class ClienteService {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private EmailService emailService;
+
+
 
     @Transactional
     public Cliente save(Cliente cliente) {
@@ -30,8 +35,12 @@ public class ClienteService {
         cliente.setHabilitado(Boolean.TRUE);
         cliente.setVersao(1L);
         cliente.setDataCriacao(LocalDate.now());
-
-        return repository.save(cliente);
+        Cliente clienteSalvo = repository.save(cliente);
+ 
+        emailService.enviarEmailConfirmacaoCadastroCliente(clienteSalvo);
+ 
+        return clienteSalvo;
+ 
     }
 
     @Transactional

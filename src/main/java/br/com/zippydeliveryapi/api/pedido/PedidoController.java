@@ -48,6 +48,8 @@ public class PedidoController {
     public ResponseEntity<Pedido> save(@RequestBody @Valid PedidoRequest request) {
         Empresa empresa = empresaService.findById(request.getId_empresa());
 
+        Double valorTotal = 0.0;
+        
         Pedido pedidoNovo = Pedido.builder()
                 .empresa(empresa)
                 .dataHora(request.getDataHora())
@@ -66,6 +68,12 @@ public class PedidoController {
                 .itensPedido(criarListaItensPedidos(request.getItens()))
                 .build();
 
+        for (ItensPedido itens: pedidoNovo.getItensPedido()) {
+            valorTotal = valorTotal + itens.getValorTotal();
+        }
+
+        pedidoNovo.setValorTotal(valorTotal);
+
         Pedido pedido = pedidoService.save(pedidoNovo);
 
         return new ResponseEntity<Pedido>(pedido, HttpStatus.CREATED);
@@ -79,6 +87,11 @@ public class PedidoController {
     @GetMapping("/{id}")
     public Pedido findById(@PathVariable Long id) {
         return pedidoService.findById(id);
+    }
+    
+    @GetMapping("/findByEmpresa/{id}")
+    public List<Pedido> findByIdEmpresa(@PathVariable Long id) {
+        return pedidoService.findByIdEmpresa(id);
     }
 
     @PutMapping("/{id}")

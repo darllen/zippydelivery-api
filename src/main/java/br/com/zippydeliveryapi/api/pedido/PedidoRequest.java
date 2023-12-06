@@ -24,7 +24,6 @@ public class PedidoRequest {
     private String formaPagamento;
     private String statusPedido;
     private String statusPagamento;
-    private Double valorTotal;
     private Double taxaEntrega;
     private String logradouro;
     private String bairro;
