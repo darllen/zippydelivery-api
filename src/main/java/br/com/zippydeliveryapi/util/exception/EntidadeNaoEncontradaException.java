@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class EntidadeNaoEncontradaException extends RuntimeException {
 
     public EntidadeNaoEncontradaException(String entidade, Long id) {
-	super(String.format("Não foi encontrado(a) um(a) %s com o id %s", entidade, id.toString()));
+        super(String.format("Não foi encontrado(a) um(a) %s com o id %s", entidade, id.toString()));
     }
 }

@@ -1,14 +1,14 @@
 package br.com.zippydeliveryapi.model.produto;
 
 import org.hibernate.annotations.Where;
-
-import br.com.zippydeliveryapi.model.categoriaProduto.CategoriaProduto;
+import br.com.zippydeliveryapi.model.categoria.CategoriaProduto;
+import br.com.zippydeliveryapi.model.empresa.Empresa;
 import br.com.zippydeliveryapi.util.entity.EntidadeAuditavel;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,22 +27,23 @@ public class Produto extends EntidadeAuditavel {
 
    @ManyToOne
    @JoinColumn(name = "categoria_id")
-   private CategoriaProduto categoriaId;
+   private CategoriaProduto categoria;
 
-   @Column
+   @ManyToOne
+   @JoinColumn(name = "empresa_id")
+   private Empresa empresa;
+
+   @Column(nullable = false, length = 100)
    private String titulo;
 
-   @Column
+   @Column(nullable = false)
    private String imagem;
 
    @Column
    private String descricao;
 
-   @Column
+   @Column(nullable = false)
    private Double preco;
-
-   @Column
-   private String categoria;
 
    @Column
    private Boolean disponibilidade;

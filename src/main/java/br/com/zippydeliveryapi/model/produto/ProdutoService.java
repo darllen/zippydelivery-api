@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.zippydeliveryapi.model.categoriaProduto.CategoriaProduto;
+import br.com.zippydeliveryapi.model.categoria.CategoriaProduto;
 import br.com.zippydeliveryapi.util.exception.ProdutoException;
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
+
 
 @Service
 public class ProdutoService {
@@ -19,11 +19,12 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository repository;
 
-    @jakarta.transaction.Transactional
+  
+    @Transactional
     public Produto save(Produto produto) {
-        //if (produto.getDisponibilidade() == false) {
-          //  throw new ProdutoException(ProdutoException.MSG_DISPONIBILIDADE_PRODUTO);
-        //}
+        if (produto.getDisponibilidade() == false) {
+            throw new ProdutoException(ProdutoException.MESSAGE_DISPONIBILIDADE_PRODUTO);
+        }
 
         produto.setHabilitado(Boolean.TRUE);
         produto.setVersao(1L);
@@ -32,7 +33,6 @@ public class ProdutoService {
     }
 
     public List<Produto> findAll() {
-
         return repository.findAll();
     }
 
@@ -40,13 +40,14 @@ public class ProdutoService {
         return repository.findById(id).get();
     }
 
+    public List<Produto> findByCategory(Long idCategoria) {
+        return repository.findByCategoriaId(idCategoria);
+    }
+
     @Transactional
     public void update(Long id, Produto produtoAlterado) {
-
         Produto produto = repository.findById(id).get();
-        produto.setCategoriaId(produtoAlterado.getCategoriaId());
-        produto.setCategoria(produtoAlterado.getCategoria());
-
+        produto.setCategoria(produto.getCategoria());
         produto.setDescricao(produtoAlterado.getDescricao());
         produto.setTitulo(produtoAlterado.getTitulo());
         produto.setImagem(produtoAlterado.getImagem());
@@ -70,14 +71,30 @@ public class ProdutoService {
         Map<Long, List<Object>> categoriasMap = new HashMap<>();
 
         for (Object[] resultado : resultados) {
-            CategoriaProduto categoriaId = (CategoriaProduto) resultado[0];
-            Object produto = resultado[1];
+            CategoriaProduto categoria = (CategoriaProduto) resultado[0];
+            Produto produto = (Produto) resultado[1];
 
-            if (produto != null) {
-                categoriasMap.computeIfAbsent(categoriaId.getId(), k -> new ArrayList<>()).add(produto);
+            if (produto != null && produto.getHabilitado() == true) {
+                categoriasMap.computeIfAbsent(categoria.getId(), k -> new ArrayList<>()).add(produto);
             }
         }
 
+        return new ArrayList<>(categoriasMap.values());
+    }
+  
+    public List<List<Object>> agruparPorCategoriaeEmpresa(Long id) {
+        List<Object[]> resultados = repository.findByEmpresaGroupByCategoria(id);
+        Map<Long, List<Object>> categoriasMap = new HashMap<>();
+    
+        for (Object[] resultado : resultados) {
+            CategoriaProduto categoria = (CategoriaProduto) resultado[0];
+            Object produto = resultado[1];
+    
+            if (produto != null) {
+                categoriasMap.computeIfAbsent(categoria.getId(), k -> new ArrayList<>()).add(produto);
+            }
+        }
+    
         return new ArrayList<>(categoriasMap.values());
     }
 

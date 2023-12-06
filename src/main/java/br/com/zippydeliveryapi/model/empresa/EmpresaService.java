@@ -7,8 +7,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.zippydeliveryapi.model.acesso.Usuario;
+import br.com.zippydeliveryapi.model.acesso.UsuarioService;
+import br.com.zippydeliveryapi.model.mensagens.EmailService;
 import br.com.zippydeliveryapi.util.exception.EntidadeNaoEncontradaException;
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 
 @Service
 public class EmpresaService {
@@ -16,11 +19,26 @@ public class EmpresaService {
     @Autowired
     private EmpresaRepository repository;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
+    
+    @Autowired
+    private EmailService emailService;
+
+
     @Transactional
     public Empresa save(Empresa empresa) {
+        usuarioService.save(empresa.getUsuario());
+        
         empresa.setHabilitado(Boolean.TRUE);
         empresa.setVersao(1L);
         empresa.setDataCriacao(LocalDate.now());
+        empresa.setStatus("Pendente");
+
+
+        emailService.enviarEmailConfirmacaoCadastroEmpresa(empresa);
+
         return repository.save(empresa);
     }
 
@@ -47,31 +65,47 @@ public class EmpresaService {
         repository.save(empresa);
     }
 
+    @Transactional
+    public void updateStatus(Long id, String novoStatus) {
+        Empresa empresa = repository.findById(id)
+            .orElseThrow(() -> new EntidadeNaoEncontradaException("Empresa", id));
+
+        empresa.setStatus(novoStatus);
+        repository.save(empresa);
+    }
+
     public List<Empresa> findAll() { 
         return repository.findAll(); 
     }
 
     public Empresa findById(Long id) {
-        Optional<Empresa> consulta = repository.findById(id);
-
-        if (consulta.isPresent()) {
-            return consulta.get();
-        } else {
-            throw new EntidadeNaoEncontradaException("Empresa", id);
-        }
+        return repository.findById(id)
+            .orElseThrow(() -> new EntidadeNaoEncontradaException("Empresa", id));
     }
 
     @Transactional
     public void delete(Long id) {
-        Empresa empresa = repository.findById(id).get();
+        Empresa empresa = repository.findById(id)
+            .orElseThrow(() -> new EntidadeNaoEncontradaException("Empresa", id));
 
         empresa.setHabilitado(Boolean.FALSE);
         empresa.setVersao(empresa.getVersao() + 1);
         empresa.setCnpj("");
         empresa.setEmail("");
         empresa.setTelefone("");
+        empresa.getUsuario().setUsername("");
+        empresa.getUsuario().setPassword("");
+
 
         repository.save(empresa);
     }
+
+    public Empresa findByUsuario(Long id) {
+
+        Optional<Usuario> usuario = usuarioService.find(id);
+
+        return repository.findByUsuario(usuario);
+    }
+
 
 }

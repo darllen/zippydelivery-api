@@ -1,11 +1,9 @@
 package br.com.zippydeliveryapi.api.empresa;
 
 import org.hibernate.validator.constraints.Length;
-
-import br.com.zippydeliveryapi.model.empresa.Empresa;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,7 +35,7 @@ public class EmpresaRequest {
     @Length(max = 10, message = "O CEP deverá ter no máximo {max} caracteres")
     private String cep;
 
-    private String categoria;
+    private Long idCategoria;
     private Integer tempoEntrega;
     private Double taxaFrete;
     private String telefone;
@@ -45,29 +43,12 @@ public class EmpresaRequest {
     private String imgCapa;
     private String logradouro;
     private String bairro;
+    private String perfil;
     private String cidade;
     private String estado;
     private String complemento;
     private String numeroEndereco;
+    private String senha;
+    private String[] formasPagamento;
 
-    public Empresa build() {
-        return Empresa.builder()
-                .nome(nome)
-                .cnpj(cnpj)
-                .email(email)
-                .categoria(categoria)
-                .tempoEntrega(tempoEntrega)
-                .taxaFrete(taxaFrete)
-                .telefone(telefone)
-                .imgPerfil(imgPerfil)
-                .imgCapa(imgCapa)
-                .logradouro(logradouro)
-                .bairro(bairro)
-                .cidade(cidade)
-                .estado(estado)
-                .cep(cep)
-                .complemento(complemento)
-                .numeroEndereco(numeroEndereco)
-                .build();
-    }
 }

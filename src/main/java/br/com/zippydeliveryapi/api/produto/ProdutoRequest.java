@@ -13,21 +13,12 @@ import lombok.NoArgsConstructor;
 public class ProdutoRequest {
 
    private Long idCategoria;
-
    private String titulo;
-
    private String imagem;
-
    private String descricao;
-
    private Double preco;
-
    private Boolean disponibilidade;
-
-   private String categoria;
-
    private Integer tempoEntregaMinimo;
-
    private Integer tempoEntregaMaximo;
 
    public Produto build() {
@@ -36,7 +27,6 @@ public class ProdutoRequest {
             .imagem(imagem)
             .titulo(titulo)
             .disponibilidade(disponibilidade)
-            .categoria(categoria)
             .preco(preco)
             .build();
    }
