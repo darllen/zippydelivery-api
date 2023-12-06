@@ -54,7 +54,7 @@ public class EmailService {
         Context params = new Context();
         params.setVariable("cliente", cliente);
 
-        this.sendMailTemplate("bem_vindo_cliente.html", cliente.getUsuario().getUsername(), assuntoEmail, params);
+        this.sendMailTemplate("bem_vindo_cliente", cliente.getUsuario().getUsername(), assuntoEmail, params);
     }
     
     public void enviarEmailConfirmacaoCadastroEmpresa(Empresa empresa) {
