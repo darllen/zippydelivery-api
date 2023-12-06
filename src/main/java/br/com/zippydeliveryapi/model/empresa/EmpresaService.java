@@ -37,14 +37,17 @@ public class EmpresaService {
         empresa.setStatus("Pendente");
 
 
-        emailService.enviarEmailConfirmacaoCadastroEmpresa(empresa);
+        //emailService.enviarEmailConfirmacaoCadastroEmpresa(empresa);
 
         return repository.save(empresa);
     }
 
     @Transactional
     public void update(Long id, Empresa empresaAlterado) {
+        
+         
         Empresa empresa = repository.findById(id).get();
+
         empresa.setNome(empresaAlterado.getNome());
         empresa.setEmail(empresaAlterado.getEmail());
         empresa.setCategoria(empresaAlterado.getCategoria());

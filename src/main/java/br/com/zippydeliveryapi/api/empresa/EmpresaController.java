@@ -1,6 +1,7 @@
 package br.com.zippydeliveryapi.api.empresa;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.zippydeliveryapi.model.acesso.Usuario;
 import br.com.zippydeliveryapi.model.categoria.CategoriaEmpresa;
 import br.com.zippydeliveryapi.model.categoria.CategoriaEmpresaService;
 import br.com.zippydeliveryapi.model.cliente.Cliente;
@@ -43,8 +45,20 @@ public class EmpresaController {
     @PostMapping
     public ResponseEntity<Empresa> save(@RequestBody @Valid EmpresaRequest request) {
 
-        CategoriaEmpresa categoria = categoriaEmpresaService.findById(request.getIdCategoria());
-        Empresa empresaNova = Empresa.fromRequest(request, categoria);
+
+        Usuario usuario = Usuario.builder()
+            .roles(Arrays.asList(Usuario.ROLE_EMPRESA))
+            .username(request.getEmail())
+            .password(request.getSenha())
+            .build();
+
+        //CategoriaEmpresa categoria = categoriaEmpresaService.findById(request.getIdCategoria());
+        Empresa empresaNova = Empresa.builder()
+            .cnpj(request.getCnpj())
+            .email(request.getEmail())
+            .usuario(usuario)
+            .build();
+     
         Empresa empresaCriada = empresaService.save(empresaNova);
         
         return new ResponseEntity<Empresa>(empresaCriada, HttpStatus.CREATED);
