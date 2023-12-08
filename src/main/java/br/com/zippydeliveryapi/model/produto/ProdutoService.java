@@ -12,12 +12,14 @@ import br.com.zippydeliveryapi.model.categoria.CategoriaProduto;
 import br.com.zippydeliveryapi.util.exception.ProdutoException;
 import javax.transaction.Transactional;
 
+
 @Service
 public class ProdutoService {
 
     @Autowired
     private ProdutoRepository repository;
 
+  
     @Transactional
     public Produto save(Produto produto) {
         if (produto.getDisponibilidade() == false) {
@@ -79,8 +81,7 @@ public class ProdutoService {
 
         return new ArrayList<>(categoriasMap.values());
     }
-
-    
+  
     public List<List<Object>> agruparPorCategoriaeEmpresa(Long id) {
         List<Object[]> resultados = repository.findByEmpresaGroupByCategoria(id);
         Map<Long, List<Object>> categoriasMap = new HashMap<>();
@@ -96,7 +97,5 @@ public class ProdutoService {
     
         return new ArrayList<>(categoriasMap.values());
     }
-    
-
 
 }

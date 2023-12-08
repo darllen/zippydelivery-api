@@ -66,7 +66,8 @@ public class ClienteRequest {
             .complemento(complemento)
             .build();
    }
-    public Usuario buildUsuario() {
+
+  public Usuario buildUsuario() {
 	
 	return Usuario.builder()
 		.username(email)
@@ -74,5 +75,6 @@ public class ClienteRequest {
 		.roles(Arrays.asList(Usuario.ROLE_CLIENTE))
 		.build();
     }
+
 
 }

@@ -40,7 +40,6 @@ public class ClienteService {
         emailService.enviarEmailConfirmacaoCadastroCliente(clienteSalvo);
  
         return clienteSalvo;
- 
     }
 
     @Transactional
