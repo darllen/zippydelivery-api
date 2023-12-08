@@ -117,6 +117,11 @@ public class PedidoController {
         return itens;
     }
 
+    @GetMapping("/porcliente/{id}")
+    public List<Pedido> pedidosPorCliente(@PathVariable Long id) {
+        return pedidoService.filtrarPedidosPorCliente(id);
+    }
+
     @GetMapping("/dashboard/{id}")
     public DashBoardResponse Dashboard(@PathVariable Long id) {
         return pedidoService.Dashboard(id);
