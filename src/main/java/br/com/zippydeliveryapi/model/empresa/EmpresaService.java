@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.zippydeliveryapi.model.acesso.Usuario;
 import br.com.zippydeliveryapi.model.acesso.UsuarioService;
-import br.com.zippydeliveryapi.model.mensagens.EmailService;
+//import br.com.zippydeliveryapi.model.mensagens.EmailService;
 import br.com.zippydeliveryapi.util.exception.EntidadeNaoEncontradaException;
 import javax.transaction.Transactional;
 
@@ -22,9 +22,8 @@ public class EmpresaService {
     @Autowired
     private UsuarioService usuarioService;
 
-    
-    @Autowired
-    private EmailService emailService;
+    //@Autowired
+    //private EmailService emailService;
 
 
     @Transactional
@@ -35,10 +34,7 @@ public class EmpresaService {
         empresa.setVersao(1L);
         empresa.setDataCriacao(LocalDate.now());
         empresa.setStatus("Pendente");
-
-
-        emailService.enviarEmailConfirmacaoCadastroEmpresa(empresa);
-
+        //emailService.enviarEmailConfirmacaoCadastroEmpresa(empresa);
         return repository.save(empresa);
     }
 
@@ -101,7 +97,6 @@ public class EmpresaService {
     }
 
     public Empresa findByUsuario(Long id) {
-
         Optional<Usuario> usuario = usuarioService.find(id);
 
         return repository.findByUsuario(usuario);

@@ -27,12 +27,12 @@ public class Empresa extends EntidadeAuditavel {
   private Usuario usuario;
 
   @ManyToOne
-  @JoinColumn(name = "idCategoria")
+  @JoinColumn(name = "idCategoria", nullable = true)
   private CategoriaEmpresa categoria;
 
   @ElementCollection(targetClass = FormaPagamento.class, fetch = FetchType.EAGER)
   @CollectionTable(name = "empresa_formas_pagamento", joinColumns = @JoinColumn(name = "empresa_id"))
-  @Column(name = "forma_pagamento", nullable = false)
+  @Column(name = "forma_pagamento", nullable = true)
   @Enumerated(EnumType.STRING)
   private Set<FormaPagamento> formasPagamento;
 
