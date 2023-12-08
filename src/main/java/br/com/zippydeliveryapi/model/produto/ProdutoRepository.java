@@ -14,12 +14,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     @Query("SELECT c AS categoria, p FROM CategoriaProduto c LEFT JOIN Produto p ON c.id = p.categoria.id WHERE c.empresa.id = :empresaId")
     List<Object[]> findByEmpresaGroupByCategoria(@Param("empresaId") Long empresaId);
-
-    
-
     List<Produto> findByCategoriaId(Long idCategoria);
-
-    
     List<Produto> findByEmpresaId(Long idEmpresa);
+
     
 }

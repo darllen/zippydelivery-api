@@ -3,6 +3,8 @@ package br.com.zippydeliveryapi.api.pedido;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +19,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.zippydeliveryapi.model.cliente.ClienteService;
+import br.com.zippydeliveryapi.model.cupom.CupomDesconto;
+import br.com.zippydeliveryapi.model.cupom.CupomDescontoService;
 import br.com.zippydeliveryapi.model.empresa.Empresa;
 import br.com.zippydeliveryapi.model.empresa.EmpresaService;
 import br.com.zippydeliveryapi.model.itensPedido.ItensPedido;
+import br.com.zippydeliveryapi.model.pedido.Pedido;
 import br.com.zippydeliveryapi.model.pedido.PedidoService;
 import br.com.zippydeliveryapi.model.produto.Produto;
 import br.com.zippydeliveryapi.model.produto.ProdutoService;
-import br.com.zippydeliveryapi.model.pedido.Pedido;
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/pedido")
@@ -43,15 +46,18 @@ public class PedidoController {
     @Autowired
     private ProdutoService produtoService;
 
+    @Autowired
+    private CupomDescontoService cupomDescontoService;
+
     
     @PostMapping
     public ResponseEntity<Pedido> save(@RequestBody @Valid PedidoRequest request) {
         Empresa empresa = empresaService.findById(request.getId_empresa());
-
-        Double valorTotal = 0.0;
-        
+        CupomDesconto cupom = cupomDescontoService.findByCodigo(request.getCodigoCupom());
+      
         Pedido pedidoNovo = Pedido.builder()
                 .empresa(empresa)
+                .cupomDesconto(cupom)
                 .dataHora(request.getDataHora())
                 .formaPagamento(request.getFormaPagamento())
                 .statusPagamento(request.getStatusPagamento())
@@ -68,12 +74,6 @@ public class PedidoController {
                 .itensPedido(criarListaItensPedidos(request.getItens()))
                 .build();
 
-        for (ItensPedido itens: pedidoNovo.getItensPedido()) {
-            valorTotal = valorTotal + itens.getValorTotal();
-        }
-
-        pedidoNovo.setValorTotal(valorTotal);
-
         Pedido pedido = pedidoService.save(pedidoNovo);
 
         return new ResponseEntity<Pedido>(pedido, HttpStatus.CREATED);
@@ -87,11 +87,6 @@ public class PedidoController {
     @GetMapping("/{id}")
     public Pedido findById(@PathVariable Long id) {
         return pedidoService.findById(id);
-    }
-    
-    @GetMapping("/findByEmpresa/{id}")
-    public List<Pedido> findByIdEmpresa(@PathVariable Long id) {
-        return pedidoService.findByIdEmpresa(id);
     }
 
     @PutMapping("/{id}")

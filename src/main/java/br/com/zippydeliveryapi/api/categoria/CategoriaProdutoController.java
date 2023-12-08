@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.zippydeliveryapi.model.categoria.CategoriaEmpresaService;
 import br.com.zippydeliveryapi.model.categoria.CategoriaProduto;
 import br.com.zippydeliveryapi.model.categoria.CategoriaProdutoService;
 import br.com.zippydeliveryapi.model.empresa.EmpresaService;
@@ -37,9 +36,6 @@ public class CategoriaProdutoController {
 
     @Autowired
     private EmpresaService empresaService;
-
-    @Autowired
-    private CategoriaEmpresaService CategoriaEmpresaService;
 
     @Autowired
     private ProdutoService produtoService;
@@ -83,26 +79,17 @@ public class CategoriaProdutoController {
     @ApiOperation(value = "Serviço responsável por deletar uma categoria de produto referente ao Id passado na URL.")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-
         List<Produto> produtos = produtoService.findByCategory(id);
-        
         for(Produto p : produtos){
             produtoService.delete(p.getId());
         }
-
         categoriaProdutoService.delete(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/categoriasprodutoporempresa/{id}")
     public List<CategoriaProduto> VerCategoriasProdutosPorEmpresa(@PathVariable Long id){
-
         return categoriaProdutoService.findByIdEmpresa(id);
     }
      
-    // @GetMapping("/categoriascomprodutoporempresa/{id}")
-    // public List<CategoriaProduto> VerProdutosPorEmpresa(@PathVariable Long id){
-
-    //     return categoriaProdutoService.findCategoriasByIdEmpresa(id);
-    // }
 }

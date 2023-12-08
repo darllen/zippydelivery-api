@@ -4,15 +4,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import br.com.zippydeliveryapi.api.pedido.DashBoardResponse;
+import br.com.zippydeliveryapi.model.cupom.CupomDesconto;
+import br.com.zippydeliveryapi.model.cupom.CupomDescontoService;
 import br.com.zippydeliveryapi.model.itensPedido.ItensPedido;
 import br.com.zippydeliveryapi.model.itensPedido.ItensPedidoRepository;
 import br.com.zippydeliveryapi.model.mensagens.EmailService;
 import br.com.zippydeliveryapi.util.exception.EntidadeNaoEncontradaException;
-import javax.transaction.Transactional;
 
 @Service
 public class PedidoService {
@@ -23,9 +24,12 @@ public class PedidoService {
     @Autowired
     private ItensPedidoRepository itensPedidoRepository;
 
+    @Autowired
+    private CupomDescontoService cupomDescontoService;
     
     @Autowired
     private EmailService emailService;
+
 
     private List<ItensPedido> criaListaPedidos(Pedido pedido) {
         List<ItensPedido> itens = new ArrayList<ItensPedido>();
@@ -45,31 +49,42 @@ public class PedidoService {
         }
         return valorTotal;
     }
-
-    @Transactional
-    public Pedido save(Pedido novoPedido) {
-        List<ItensPedido> itens = criaListaPedidos(novoPedido);
-        novoPedido.setItensPedido(null);
-        novoPedido.setDataHora(LocalDateTime.now());
-        novoPedido.setStatusPagamento("Em aberto");
-        novoPedido.setValorTotal(this.calcularValorTotalPedido(itens));
-        novoPedido.setHabilitado(true);
-
-        Pedido pedidoSalvo = repository.saveAndFlush(novoPedido);
-
+    
+    private Pedido salvarPedido(Pedido pedido, List<ItensPedido> itens) {
+        pedido.setItensPedido(null);
+        pedido.setDataHora(LocalDateTime.now());
+        pedido.setStatusPagamento("Em aberto");
+        pedido.setValorTotal(calcularValorTotalPedido(itens));
+        pedido.setHabilitado(true);
+    
+        Pedido pedidoSalvo = repository.saveAndFlush(pedido);
+    
         for (ItensPedido item : itens) {
             item.setPedido(pedidoSalvo);
             item.setHabilitado(true);
             itensPedidoRepository.saveAndFlush(item);
         }
+    
         pedidoSalvo.setItensPedido(itens);
-
         emailService.enviarEmailFinalizaçãoPedido(pedidoSalvo);
+      
         return pedidoSalvo;
     }
+    
+    @Transactional
+    public Pedido save(Pedido novoPedido) {
+        List<ItensPedido> itens = criaListaPedidos(novoPedido);
+        Pedido pedidoSalvo = salvarPedido(novoPedido, itens);
+        CupomDesconto cupom = novoPedido.getCupomDesconto();
+    
+        if (cupom != null && cupomDescontoService.validarCupom(cupom)) {
+            cupomDescontoService.aplicarCupom(pedidoSalvo, cupom);
+        }
+    
+        return pedidoSalvo;
+    }  
 
     public List<Pedido> findAll() {
-        // List<Pedido> pedidos = repository.findAll();
         return repository.findAll();
     }
 
@@ -81,7 +96,6 @@ public class PedidoService {
     public List<Pedido> findByIdEmpresa(Long id) {
         return repository.findByidEmpresa(id);
     }
-
 
     @Transactional
     public void update(Long id, String statusPagamento, String statusPedido) {

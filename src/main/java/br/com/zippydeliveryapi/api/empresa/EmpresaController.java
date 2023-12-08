@@ -1,10 +1,7 @@
 package br.com.zippydeliveryapi.api.empresa;
 
-
 import java.util.List;
-
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.zippydeliveryapi.model.categoria.CategoriaEmpresa;
 import br.com.zippydeliveryapi.model.categoria.CategoriaEmpresaService;
-import br.com.zippydeliveryapi.model.cliente.Cliente;
 import br.com.zippydeliveryapi.model.empresa.Empresa;
 import br.com.zippydeliveryapi.model.empresa.EmpresaService;
 

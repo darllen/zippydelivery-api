@@ -50,5 +50,5 @@ public class EmpresaRequest {
     private String numeroEndereco;
     private String senha;
     private String[] formasPagamento;
-    
+
 }
