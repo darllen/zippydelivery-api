@@ -119,7 +119,7 @@ public class PedidoService {
     }
 
     public List<Pedido> filtrarPedidosPorCliente(Long idCliente){
-        List<Pedido> listaPedidosPorCliente = repository.filtrarPedidosPorCliente(idCliente);
+        List<Pedido> listaPedidosPorCliente = repository.findByidCliente(idCliente);
         return listaPedidosPorCliente;
     }
 
