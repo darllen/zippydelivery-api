@@ -56,6 +56,7 @@ public class EmpresaService {
         empresa.setLogradouro(empresaAlterado.getLogradouro());
         empresa.setEstado(empresaAlterado.getEstado());
         empresa.setCep(empresaAlterado.getCep());
+        empresa.setFormasPagamento(empresaAlterado.getFormasPagamento());
 
         empresa.setVersao(empresa.getVersao() + 1);
         repository.save(empresa);
