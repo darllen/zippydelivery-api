@@ -28,7 +28,7 @@ public class CategoriaProduto extends EntidadeAuditavel {
 
     @Column
     private String descricao;
-
+ 
     @ManyToOne
     @JoinColumn(name = "empresa_id")
     private Empresa empresa;
