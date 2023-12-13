@@ -29,6 +29,7 @@ import br.com.zippydeliveryapi.model.pedido.PedidoService;
 import br.com.zippydeliveryapi.model.produto.Produto;
 import br.com.zippydeliveryapi.model.produto.ProdutoService;
 
+
 @RestController
 @RequestMapping("/api/pedido")
 @CrossOrigin
@@ -136,5 +137,13 @@ public class PedidoController {
     public List<DashBoardResponse> DashboardMensalAll() {
         return pedidoService.DashboardMensalAll();
     }
+
+    
+    @GetMapping("/porcliente/{id}")
+    public List<Pedido> pedidosPorCliente(@PathVariable Long id) {
+        return pedidoService.filtrarPedidosPorCliente(id);
+    }
+
+
 
 }

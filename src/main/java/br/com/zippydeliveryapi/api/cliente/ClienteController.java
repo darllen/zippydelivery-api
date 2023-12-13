@@ -72,7 +72,7 @@ public class ClienteController {
         return ResponseEntity.ok().build();
     }
   
-    @GetMapping("/user/{id}")
+    @GetMapping("/findByUser/{id}")
     public Cliente findByUser(@PathVariable Long id) {
         Cliente cliente = clienteService.findByUsuario(id);
         return cliente;
