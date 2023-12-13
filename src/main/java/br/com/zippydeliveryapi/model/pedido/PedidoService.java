@@ -66,7 +66,7 @@ public class PedidoService {
         }
     
         pedidoSalvo.setItensPedido(itens);
-        emailService.enviarEmailFinalizaçãoPedido(pedidoSalvo);
+        // emailService.enviarEmailFinalizaçãoPedido(pedidoSalvo);
       
         return pedidoSalvo;
     }

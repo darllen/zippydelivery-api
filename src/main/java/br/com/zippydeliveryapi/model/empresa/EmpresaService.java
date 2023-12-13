@@ -37,7 +37,7 @@ public class EmpresaService {
         empresa.setStatus("Pendente");
 
 
-        emailService.enviarEmailConfirmacaoCadastroEmpresa(empresa);
+        // emailService.enviarEmailConfirmacaoCadastroEmpresa(empresa);
 
         return repository.save(empresa);
     }
