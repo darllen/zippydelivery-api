@@ -29,10 +29,9 @@ public class PedidoService {
 
     @Autowired
     private CupomDescontoService cupomDescontoService;
-    
+
     @Autowired
     private EmailService emailService;
-
 
     private List<ItensPedido> criaListaPedidos(Pedido pedido) {
         List<ItensPedido> itens = new ArrayList<ItensPedido>();
@@ -52,40 +51,40 @@ public class PedidoService {
         }
         return valorTotal;
     }
-    
+
     private Pedido salvarPedido(Pedido pedido, List<ItensPedido> itens) {
         pedido.setItensPedido(null);
         pedido.setDataHora(LocalDateTime.now());
         pedido.setStatusPagamento("Em aberto");
         pedido.setValorTotal(calcularValorTotalPedido(itens));
         pedido.setHabilitado(true);
-    
+
         Pedido pedidoSalvo = repository.saveAndFlush(pedido);
-    
+
         for (ItensPedido item : itens) {
             item.setPedido(pedidoSalvo);
             item.setHabilitado(true);
             itensPedidoRepository.saveAndFlush(item);
         }
-    
+
         pedidoSalvo.setItensPedido(itens);
-       // emailService.enviarEmailFinalizaçãoPedido(pedidoSalvo);
-      
+        emailService.enviarEmailFinalizaçãoPedido(pedidoSalvo);
+
         return pedidoSalvo;
     }
-    
+
     @Transactional
     public Pedido save(Pedido novoPedido) {
         List<ItensPedido> itens = criaListaPedidos(novoPedido);
         Pedido pedidoSalvo = salvarPedido(novoPedido, itens);
         CupomDesconto cupom = novoPedido.getCupomDesconto();
-    
+
         if (cupom != null && cupomDescontoService.validarCupom(cupom)) {
             cupomDescontoService.aplicarCupom(pedidoSalvo, cupom);
         }
-    
+
         return pedidoSalvo;
-    }  
+    }
 
     public List<Pedido> findAll() {
         return repository.findAll();
@@ -171,7 +170,8 @@ public class PedidoService {
                 dashBoardResponse.setFatoramentoTotal(0.0);
             }
             if (dashBoardResponse.getVendasTotais() > 0) {
-                dashBoardResponse.setFaturamentoMedio(dashBoardResponse.getFatoramentoTotal() / dashBoardResponse.getVendasTotais());
+                dashBoardResponse.setFaturamentoMedio(
+                        dashBoardResponse.getFatoramentoTotal() / dashBoardResponse.getVendasTotais());
             }
         }
         return responses;
@@ -227,16 +227,16 @@ public class PedidoService {
                 dashBoardResponse.setFatoramentoTotal(0.0);
             }
             if (dashBoardResponse.getVendasTotais() > 0) {
-                dashBoardResponse.setFaturamentoMedio(dashBoardResponse.getFatoramentoTotal() / dashBoardResponse.getVendasTotais());
+                dashBoardResponse.setFaturamentoMedio(
+                        dashBoardResponse.getFatoramentoTotal() / dashBoardResponse.getVendasTotais());
             }
         }
         return responses;
     }
 
-    public List<Pedido> filtrarPedidosPorCliente(Long idCliente){
+    public List<Pedido> filtrarPedidosPorCliente(Long idCliente) {
         List<Pedido> listaPedidosPorCliente = repository.findByidCliente(idCliente);
         return listaPedidosPorCliente;
     }
-
 
 }
