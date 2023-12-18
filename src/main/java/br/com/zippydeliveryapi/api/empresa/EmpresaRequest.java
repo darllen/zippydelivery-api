@@ -47,6 +47,7 @@ public class EmpresaRequest {
     private String cidade;
     private String estado;
     private String complemento;
+    private String status;
     private String numeroEndereco;
     private String senha;
     private String[] formasPagamento;

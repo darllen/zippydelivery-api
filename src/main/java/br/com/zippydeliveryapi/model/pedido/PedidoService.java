@@ -4,9 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import br.com.zippydeliveryapi.api.pedido.DashBoardResponse;
 import br.com.zippydeliveryapi.model.cupom.CupomDesconto;
 import br.com.zippydeliveryapi.model.cupom.CupomDescontoService;
@@ -66,7 +69,7 @@ public class PedidoService {
         }
     
         pedidoSalvo.setItensPedido(itens);
-        emailService.enviarEmailFinalizaçãoPedido(pedidoSalvo);
+       // emailService.enviarEmailFinalizaçãoPedido(pedidoSalvo);
       
         return pedidoSalvo;
     }
@@ -92,7 +95,6 @@ public class PedidoService {
         return repository.findById(id).get();
     }
 
-    
     public List<Pedido> findByIdEmpresa(Long id) {
         return repository.findByidEmpresa(id);
     }
@@ -114,6 +116,8 @@ public class PedidoService {
 
         pedido.setHabilitado(Boolean.FALSE);
         pedido.setVersao(pedido.getVersao() + 1);
+        pedido.setStatusPedido("Cancelado");
+        pedido.setStatusPagamento("Estornado");
 
         repository.save(pedido);
     }
@@ -233,5 +237,11 @@ public class PedidoService {
         }
         return responses;
     }
+
+    public List<Pedido> filtrarPedidosPorCliente(Long idCliente){
+        List<Pedido> listaPedidosPorCliente = repository.filtrarPedidosPorCliente(idCliente);
+        return listaPedidosPorCliente;
+    }
+
 
 }
