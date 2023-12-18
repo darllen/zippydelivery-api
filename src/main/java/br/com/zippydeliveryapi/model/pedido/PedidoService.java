@@ -4,9 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import br.com.zippydeliveryapi.api.pedido.DashBoardResponse;
 import br.com.zippydeliveryapi.model.cupom.CupomDesconto;
 import br.com.zippydeliveryapi.model.cupom.CupomDescontoService;
@@ -26,10 +29,9 @@ public class PedidoService {
 
     @Autowired
     private CupomDescontoService cupomDescontoService;
-    
+
     @Autowired
     private EmailService emailService;
-
 
     private List<ItensPedido> criaListaPedidos(Pedido pedido) {
         List<ItensPedido> itens = new ArrayList<ItensPedido>();
@@ -49,40 +51,40 @@ public class PedidoService {
         }
         return valorTotal;
     }
-    
+
     private Pedido salvarPedido(Pedido pedido, List<ItensPedido> itens) {
         pedido.setItensPedido(null);
         pedido.setDataHora(LocalDateTime.now());
         pedido.setStatusPagamento("Em aberto");
         pedido.setValorTotal(calcularValorTotalPedido(itens));
         pedido.setHabilitado(true);
-    
+
         Pedido pedidoSalvo = repository.saveAndFlush(pedido);
-    
+
         for (ItensPedido item : itens) {
             item.setPedido(pedidoSalvo);
             item.setHabilitado(true);
             itensPedidoRepository.saveAndFlush(item);
         }
-    
+
         pedidoSalvo.setItensPedido(itens);
         emailService.enviarEmailFinalizaçãoPedido(pedidoSalvo);
-      
+
         return pedidoSalvo;
     }
-    
+
     @Transactional
     public Pedido save(Pedido novoPedido) {
         List<ItensPedido> itens = criaListaPedidos(novoPedido);
         Pedido pedidoSalvo = salvarPedido(novoPedido, itens);
         CupomDesconto cupom = novoPedido.getCupomDesconto();
-    
+
         if (cupom != null && cupomDescontoService.validarCupom(cupom)) {
             cupomDescontoService.aplicarCupom(pedidoSalvo, cupom);
         }
-    
+
         return pedidoSalvo;
-    }  
+    }
 
     public List<Pedido> findAll() {
         return repository.findAll();
@@ -92,7 +94,6 @@ public class PedidoService {
         return repository.findById(id).get();
     }
 
-    
     public List<Pedido> findByIdEmpresa(Long id) {
         return repository.findByidEmpresa(id);
     }
@@ -114,6 +115,8 @@ public class PedidoService {
 
         pedido.setHabilitado(Boolean.FALSE);
         pedido.setVersao(pedido.getVersao() + 1);
+        pedido.setStatusPedido("Cancelado");
+        pedido.setStatusPagamento("Estornado");
 
         repository.save(pedido);
     }
@@ -167,7 +170,8 @@ public class PedidoService {
                 dashBoardResponse.setFatoramentoTotal(0.0);
             }
             if (dashBoardResponse.getVendasTotais() > 0) {
-                dashBoardResponse.setFaturamentoMedio(dashBoardResponse.getFatoramentoTotal() / dashBoardResponse.getVendasTotais());
+                dashBoardResponse.setFaturamentoMedio(
+                        dashBoardResponse.getFatoramentoTotal() / dashBoardResponse.getVendasTotais());
             }
         }
         return responses;
@@ -223,10 +227,16 @@ public class PedidoService {
                 dashBoardResponse.setFatoramentoTotal(0.0);
             }
             if (dashBoardResponse.getVendasTotais() > 0) {
-                dashBoardResponse.setFaturamentoMedio(dashBoardResponse.getFatoramentoTotal() / dashBoardResponse.getVendasTotais());
+                dashBoardResponse.setFaturamentoMedio(
+                        dashBoardResponse.getFatoramentoTotal() / dashBoardResponse.getVendasTotais());
             }
         }
         return responses;
+    }
+
+    public List<Pedido> filtrarPedidosPorCliente(Long idCliente) {
+        List<Pedido> listaPedidosPorCliente = repository.findByidCliente(idCliente);
+        return listaPedidosPorCliente;
     }
 
 }

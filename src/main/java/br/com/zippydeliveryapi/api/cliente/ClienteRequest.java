@@ -43,8 +43,6 @@ public class ClienteRequest {
    private String senha;
 
 
-
-
    private String logradouro;
    private String bairro;
    private String cidade;

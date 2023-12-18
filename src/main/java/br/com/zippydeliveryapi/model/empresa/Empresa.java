@@ -111,6 +111,7 @@ public class Empresa extends EntidadeAuditavel {
         .cidade(request.getCidade())
         .estado(request.getEstado())
         .cep(request.getCep())
+        .status(request.getStatus())
         .complemento(request.getComplemento())
         .numeroEndereco(request.getNumeroEndereco())
         .formasPagamento(formasPagamento)
