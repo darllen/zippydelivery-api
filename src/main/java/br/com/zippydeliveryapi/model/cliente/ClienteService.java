@@ -9,8 +9,10 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.zippydeliveryapi.model.acesso.Usuario;
+import br.com.zippydeliveryapi.model.acesso.UsuarioService;
+import br.com.zippydeliveryapi.model.mensagens.EmailService;
 import br.com.zippydeliveryapi.util.exception.EntidadeNaoEncontradaException;
-
 
 @Service
 public class ClienteService {
@@ -18,23 +20,34 @@ public class ClienteService {
     @Autowired
     private ClienteRepository repository;
 
-    
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private EmailService emailService;
+
+
+
     @Transactional
     public Cliente save(Cliente cliente) {
+        usuarioService.save(cliente.getUsuario());
+
         cliente.setHabilitado(Boolean.TRUE);
         cliente.setVersao(1L);
         cliente.setDataCriacao(LocalDate.now());
-       
-        return repository.save(cliente);
-
+        Cliente clienteSalvo = repository.save(cliente);
+ 
+        emailService.enviarEmailConfirmacaoCadastroCliente(clienteSalvo);
+ 
+        return clienteSalvo;
     }
 
     @Transactional
     public void update(Long id, Cliente clienteAlterado) {
-        Cliente cliente = repository.findById(id).get();
+        Cliente cliente = repository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente", id));
 
         if (clienteAlterado.getBairro() == null) {
-
             cliente.setNome(clienteAlterado.getNome());
             cliente.setEmail(clienteAlterado.getEmail());
             cliente.setSenha(clienteAlterado.getSenha());
@@ -44,6 +57,7 @@ public class ClienteService {
             cliente.setEstado(cliente.getEstado());
             cliente.setCep(cliente.getCep());
             cliente.setComplemento(cliente.getComplemento());
+            cliente.getUsuario().setUsername(clienteAlterado.getEmail());
         } else {
             cliente.setNome(cliente.getNome());
             cliente.setEmail(cliente.getEmail());
@@ -63,6 +77,13 @@ public class ClienteService {
         return repository.findAll();
     }
 
+    public Cliente findByUsuario(Long id) {
+
+        Optional<Usuario> usuario = usuarioService.find(id);
+
+        return repository.findByUsuario(usuario);
+    }
+
     public Cliente findById(Long id) {
         Optional<Cliente> consulta = repository.findById(id);
 
@@ -71,7 +92,6 @@ public class ClienteService {
         } else {
             throw new EntidadeNaoEncontradaException("Cliente", id);
         }
-
     }
 
     @Transactional
@@ -81,9 +101,10 @@ public class ClienteService {
         cliente.setVersao(cliente.getVersao() + 1);
         cliente.setCpf("");
         cliente.setEmail("");
+        cliente.getUsuario().setUsername("");
+        cliente.getUsuario().setPassword("");
 
         repository.save(cliente);
     }
-
 
 }

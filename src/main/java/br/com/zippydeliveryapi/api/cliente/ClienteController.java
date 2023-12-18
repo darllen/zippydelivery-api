@@ -71,5 +71,11 @@ public class ClienteController {
         clienteService.delete(id);
         return ResponseEntity.ok().build();
     }
+  
+    @GetMapping("/findByUser/{id}")
+    public Cliente findByUser(@PathVariable Long id) {
+        Cliente cliente = clienteService.findByUsuario(id);
+        return cliente;
+    }
 
 }

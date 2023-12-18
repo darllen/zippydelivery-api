@@ -3,14 +3,6 @@ package br.com.zippydeliveryapi.model.pedido;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Where;
-import br.com.zippydeliveryapi.model.cliente.Cliente;
-import br.com.zippydeliveryapi.model.empresa.Empresa;
-import br.com.zippydeliveryapi.model.itensPedido.ItensPedido;
-import br.com.zippydeliveryapi.util.entity.EntidadeAuditavel;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,6 +11,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Where;
+
+import br.com.zippydeliveryapi.model.cliente.Cliente;
+import br.com.zippydeliveryapi.model.cupom.CupomDesconto;
+import br.com.zippydeliveryapi.model.empresa.Empresa;
+import br.com.zippydeliveryapi.model.itensPedido.ItensPedido;
+import br.com.zippydeliveryapi.util.entity.EntidadeAuditavel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,6 +45,10 @@ public class Pedido extends EntidadeAuditavel {
     @JoinColumn(name = "empresa_id")
     private Empresa empresa;
 
+    @ManyToOne
+    @JoinColumn(name = "cupom_id")
+    private CupomDesconto cupomDesconto;
+
     @Column
     @OneToMany(mappedBy = "pedido", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     @Fetch(FetchMode.SUBSELECT)
@@ -63,7 +69,7 @@ public class Pedido extends EntidadeAuditavel {
     @Column
     private Double valorTotal;
 
-    @Column 
+    @Column
     private Double taxaEntrega;
 
     @Column
@@ -78,7 +84,7 @@ public class Pedido extends EntidadeAuditavel {
     @Column
     private String estado;
 
-   // @Column(nullable = false, length = 10)
+    // @Column(nullable = false, length = 10)
     private String cep;
 
     @Column
