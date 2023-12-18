@@ -14,7 +14,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByidEmpresa(@Param("idEmpresa") Long idEmpresa);    
    
     @Query(value = "SELECT p FROM Pedido p WHERE p.cliente.id = :idCliente")
-    List<Pedido> filtrarPedidosPorCliente(Long idCliente);
+    List<Pedido> findByidCliente(@Param("idCliente") Long idCliente);
 
 }
 

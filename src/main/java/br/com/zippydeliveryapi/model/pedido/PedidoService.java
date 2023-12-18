@@ -122,11 +122,6 @@ public class PedidoService {
         repository.save(pedido);
     }
 
-    public List<Pedido> filtrarPedidosPorCliente(Long idCliente){
-        List<Pedido> listaPedidosPorCliente = repository.filtrarPedidosPorCliente(idCliente);
-        return listaPedidosPorCliente;
-    }
-
     public DashBoardResponse Dashboard(Long id) {
         List<Pedido> pedidos = repository.findByidEmpresa(id);
         DashBoardResponse response = new DashBoardResponse();
@@ -239,7 +234,7 @@ public class PedidoService {
     }
 
     public List<Pedido> filtrarPedidosPorCliente(Long idCliente){
-        List<Pedido> listaPedidosPorCliente = repository.filtrarPedidosPorCliente(idCliente);
+        List<Pedido> listaPedidosPorCliente = repository.findByidCliente(idCliente);
         return listaPedidosPorCliente;
     }
 
