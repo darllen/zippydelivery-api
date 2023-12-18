@@ -87,7 +87,7 @@ public class CategoriaProdutoController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/categoriasprodutoporempresa/{id}")
+    @GetMapping("/porempresa/{id}")
     public List<CategoriaProduto> VerCategoriasProdutosPorEmpresa(@PathVariable Long id){
         return categoriaProdutoService.findByIdEmpresa(id);
     }
