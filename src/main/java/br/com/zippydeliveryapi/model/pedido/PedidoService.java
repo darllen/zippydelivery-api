@@ -113,7 +113,7 @@ public class PedidoService {
         Pedido pedido = repository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Pedido", id));
 
-        pedido.setHabilitado(Boolean.FALSE);
+        //pedido.setHabilitado(Boolean.FALSE);
         pedido.setVersao(pedido.getVersao() + 1);
         pedido.setStatusPedido("Cancelado");
         pedido.setStatusPagamento("Estornado");
