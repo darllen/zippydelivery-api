@@ -50,7 +50,7 @@ public class CourierController {
         return this.courierService.findByUserId(id);
     }
 
-    @PutMapping("/{id}/updatestatus")
+    @PutMapping("/{id}/update-status")
     public ResponseEntity<Courier> updateStatus(@PathVariable("id") Long id, @RequestBody CourierStatusRequest request) {
         this.courierService.updateStatus(id, request.getStatus());
         return ResponseEntity.ok().build();
